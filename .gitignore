@@ -1,0 +1,9 @@
+# IntelliJ config files
+.idea/
+*.iml
+
+# Maven build output
+target/
+
+# Logs
+*.log
