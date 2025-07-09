@@ -7,3 +7,6 @@ target/
 
 # Logs
 *.log
+
+#Ressources
+resources/
