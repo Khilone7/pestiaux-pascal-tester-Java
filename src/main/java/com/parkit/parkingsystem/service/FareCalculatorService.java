@@ -13,11 +13,10 @@ public class FareCalculatorService {
         long inHour = ticket.getInTime().getTime();
         long outHour = ticket.getOutTime().getTime();
 
-        //TODO: Some tests are failing here. Need to check if this logic is correct
         long durationMilliSeconde = outHour - inHour;
         double duration = (double) durationMilliSeconde / (60 * 60 * 1000);
 
-        if (duration<0.5){
+        if (duration < 0.5) {
             ticket.setPrice(0);
             return;
         }
@@ -34,13 +33,12 @@ public class FareCalculatorService {
             default:
                 throw new IllegalArgumentException("Unkown Parking Type");
         }
-
         if (discount) {
             ticket.setPrice(ticket.getPrice() * 0.95);
         }
     }
 
-    public void calculateFare(Ticket ticket){
+    public void calculateFare(Ticket ticket) {
         calculateFare(ticket, false);
     }
 }

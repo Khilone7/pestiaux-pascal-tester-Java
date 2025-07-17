@@ -8,18 +8,17 @@ import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.util.InputReaderUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.Date;
 
 public class ParkingService {
 
     private static final Logger logger = LogManager.getLogger("ParkingService");
 
-    private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
+    private static final FareCalculatorService fareCalculatorService = new FareCalculatorService();
 
-    private InputReaderUtil inputReaderUtil;
-    private ParkingSpotDAO parkingSpotDAO;
-    private TicketDAO ticketDAO;
+    private final InputReaderUtil inputReaderUtil;
+    private final ParkingSpotDAO parkingSpotDAO;
+    private final TicketDAO ticketDAO;
     private boolean discount;
 
     public ParkingService(InputReaderUtil inputReaderUtil, ParkingSpotDAO parkingSpotDAO, TicketDAO ticketDAO) {
@@ -34,11 +33,11 @@ public class ParkingService {
             if (parkingSpot != null && parkingSpot.getId() > 0) {
                 String vehicleRegNumber = getVehichleRegNumber();
                 parkingSpot.setAvailable(false);
-                parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark it's availability as false
+                parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark its availability as false
 
                 Date inTime = new Date();
                 Ticket ticket = new Ticket();
-                //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
+                //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME
                 //ticket.setId(ticketID);
                 ticket.setParkingSpot(parkingSpot);
                 ticket.setVehicleRegNumber(vehicleRegNumber);
@@ -64,7 +63,7 @@ public class ParkingService {
     }
 
     public ParkingSpot getNextParkingNumberIfAvailable() {
-        int parkingNumber = 0;
+        int parkingNumber;
         ParkingSpot parkingSpot = null;
         try {
             ParkingType parkingType = getVehichleType();
@@ -72,7 +71,7 @@ public class ParkingService {
             if (parkingNumber > 0) {
                 parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
             } else {
-                throw new Exception("Error fetching parking number from DB. Parking slots might be full");
+                throw new IllegalStateException("Error fetching parking number from DB. Parking slots might be full");
             }
         } catch (IllegalArgumentException ie) {
             logger.error("Error parsing user input for type of vehicle", ie);
@@ -87,18 +86,14 @@ public class ParkingService {
         System.out.println("1 CAR");
         System.out.println("2 BIKE");
         int input = inputReaderUtil.readSelection();
-        switch (input) {
-            case 1: {
-                return ParkingType.CAR;
-            }
-            case 2: {
-                return ParkingType.BIKE;
-            }
-            default: {
+        return switch (input) {
+            case 1 -> ParkingType.CAR;
+            case 2 -> ParkingType.BIKE;
+            default -> {
                 System.out.println("Incorrect input provided");
                 throw new IllegalArgumentException("Entered input is invalid");
             }
-        }
+        };
     }
 
     public void processExitingVehicle() {
